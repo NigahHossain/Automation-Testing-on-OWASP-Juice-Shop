@@ -1,0 +1,183 @@
+{
+	"info": {
+		"_postman_id": "cec9572b-3cdc-4655-885d-212933e88bac",
+		"name": "Task 1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26807123"
+	},
+	"item": [
+		{
+			"name": "Sign in the user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// pm.test(\"Authentication token is present\", function () {\r",
+							"//     var jsonData = pm.response.json();\r",
+							"//     pm.expect(jsonData.authentication.token).to.exist;\r",
+							"//     pm.environment.set(\"authToken\", jsonData.authentication.token);\r",
+							"// });\r",
+							"\r",
+							"\r",
+							"pm.test(\"Authentication token and basket ID are present\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.authentication.token).to.exist;\r",
+							"    pm.expect(jsonData.authentication.bid).to.exist;\r",
+							"    pm.environment.set(\"authToken\", jsonData.authentication.token);\r",
+							"    pm.environment.set(\"basketId\", jsonData.authentication.bid);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{password}}\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/rest/user/login",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"rest",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add first item to the basket",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Item added to basket\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"ProductId\": 1,\r\n  \"BasketId\": {{basketId}},\r\n  \"quantity\": 1\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/rest/basket/{{basketId}}/items",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"rest",
+						"basket",
+						"{{basketId}}",
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify items in the basket",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify item count in basket\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.data.Products.length).to.equal(1);\r",
+							"    pm.environment.set(\"itemId\", jsonData.data.Products[0].id); // Save item ID for next steps\r",
+							"});\r",
+							"\r",
+							"// // Parse the response body as JSON\r",
+							"// var responseBody = pm.response.json();\r",
+							"\r",
+							"// // Extract the product ID from the response\r",
+							"// var productId = responseBody.data.Products[0].id;\r",
+							"\r",
+							"// // Set the product ID as an environment variable\r",
+							"// pm.environment.set(\"productId\", productId);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/rest/basket/{{basketId}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"rest",
+						"basket",
+						"{{basketId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

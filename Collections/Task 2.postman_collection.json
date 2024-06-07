@@ -1,0 +1,212 @@
+{
+	"info": {
+		"_postman_id": "2e7eee24-b869-4f4c-b59b-65855ad97273",
+		"name": "Task 2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26807123"
+	},
+	"item": [
+		{
+			"name": "Sign in the user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Authentication token and basket ID are present\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.authentication.token).to.exist;\r",
+							"    pm.expect(jsonData.authentication.bid).to.exist;\r",
+							"    pm.environment.set(\"authToken\", jsonData.authentication.token);\r",
+							"    pm.environment.set(\"basketId\", jsonData.authentication.bid);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{password}}\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/rest/user/login",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"rest",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add second item to the basket",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// pm.test(\"Item is added to the basket\", function () {\r",
+							"//     pm.expect(pm.response.code).to.equal(200);\r",
+							"    \r",
+							"//     // Extract item_id from the response\r",
+							"//     var responseBody = pm.response.json();\r",
+							"//     pm.environment.set(\"itemId\", responseBody.data.item_id); // Assuming the response contains the item_id\r",
+							"// });\r",
+							"\r",
+							"pm.test(\"Second item added to basket\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"ProductId\": 24,\r\n  \"BasketId\": {{basketId}},\r\n  \"quantity\": 1\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/rest/basket/{{basketId}}/items",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"rest",
+						"basket",
+						"{{basketId}}",
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete one item from the basket",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Item is deleted successfully\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/rest/basket/{{basketId}}/items/{{itemId}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"rest",
+						"basket",
+						"{{basketId}}",
+						"items",
+						"{{itemId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify items in the basket",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// pm.test(\"One item remains in the basket\", function () {\r",
+							"//   var basket = pm.response.json().data.Products;\r",
+							"//   pm.expect(basket.length).to.equal(1);\r",
+							"// });\r",
+							"\r",
+							"pm.test(\"One item remains in the basket\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.data.Products.length).to.equal(1);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/rest/basket/{{basketId}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"rest",
+						"basket",
+						"{{basketId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
